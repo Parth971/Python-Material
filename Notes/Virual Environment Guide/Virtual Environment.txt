@@ -1,0 +1,56 @@
+# VirualEnvGuide
+Notes for remembering virtual environment, generation of envs. and creation of reqirement.txt file
+
+
+python --version
+
+# installing virtual environment
+pip install virtualenv
+
+# creating virtual environment
+virtualenv nameOfVirEnv
+
+#activating in Linux
+source nameOfVirEnv/bin/activate
+
+#activating in Windows
+nameOfVirEnv\scripts\activate 
+
+#if above gives error then 
+#solution : open powershell/cmd as admin and go to project dir
+#then run 
+nameOfVirEnv\scripts\activate 
+
+#if still gets error then run 
+set-executionpolicy remotesigned
+Y
+
+#then it will definetly work 
+
+#for deactivate
+deactivate
+
+
+#creating requirements.txt OR all modules needed
+pip freeze > requirements.txt
+
+
+#creating virtual env with including all packages of basic python then
+virtualenv --system-site-packages virEnvName
+
+
+#delete virtual Envs = del that folder - use powershell adinn 
+del virEnvName 
+A
+
+
+#for installing all pakages of requirement.txt to vir env
+#activate virtial env then 
+pip install -r requirement.txt
+
+
+
+# for ubuntu
+sudo apt install python3-venv
+python3 -m venv my-project-env
+source my-project-env/bin/activate

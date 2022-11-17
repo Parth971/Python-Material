@@ -1,0 +1,200 @@
+
+# create project in current directory 
+django-admin startproject iCoder .
+
+# create app blog
+python manage.py startapp blog
+
+# create urls.py file in blog app
+
+# create virtual environment
+pip install virtualenv
+virtualenv iCoderEnv
+# activate it
+
+# install django in virtualenv
+pip install django
+
+# add to requirement.txt file 
+django==4.0.2
+
+# create app home
+python manage.py startapp home
+
+# create urls.py file in home app
+
+# structure of urls -> 
+# main project urls: 
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('home.urls')),
+    path('blog/', include('blog.urls')),
+]
+# home app urls:
+urlpatterns = [
+    path('', views.home, name="Home"),
+    path('about/', views.about, name="About"),
+    path('contact/', views.contact, name="Contact"),
+]
+# blog app urls:
+urlpatterns = [
+    path('', views.blogHome, name="blogHome"),
+    path('<str:slug>/', views.blogPost, name="blogPost"),
+]
+
+# add template folder to project dir and add in setting 
+templates -> blog -> blogHome.html
+templates -> blog -> blogPost.html
+templates -> home -> home.html
+templates -> home -> about.html
+templates -> home -> contact.html
+templates -> base.html
+
+# in settings.py use this 
+'''
+TEMPLATES = [{
+    ....
+    'DIRS': [BASE_DIR / 'templates']
+    ...
+}]
+'''
+
+# makemigration, migrate and createsuperuser
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+
+/*******************************************************\
+NOTE: After creating apps, we have to ADD them first to settings and REGISTER them
+# go to setting.py -> INSTALLED_APPS
+# add their
+'home.apps.HomeConfig',
+'blog.apps.BlogConfig'
+
+# go to admin.py of home because Contact model is belonging to home app
+from home.models import Contact
+admin.site.register(Contact)
+
+/*******************************************************\
+
+# contact form 
+# create html form in contact.html 
+# dont forget to add {% csrf_token %}
+# Note: <form action="/contact/" method="post"> -> trailing slash is needed idk y but its needed
+# create model in models.py of home app (make sure to ADD AND REGISTER apps)
+python manage.py makemigrations
+python manage.py migrate
+
+
+# for using message framework
+# go to setting and import
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.INFO: '',
+    50: 'critical',
+    messages.ERROR: 'danger' -> if messages.error() called then it will pass 'danger' as tag
+}
+# for using messages
+# go to views.py
+from django.contrib import messages
+messages.success(request, 'Profile details updated.')
+messages.error(request, 'Document deleted.')
+
+# go to html 
+{% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+{% endfor %}
+
+# union operator in django
+quieryset = quieryset1.union(quieryset2)
+
+# find length of quieryset
+quieryset.count()
+
+# create blank quieryset
+b = BlogPost.objects.none()
+
+# always put paths which have value on top
+path('blogComment/', views.blogComment, name="blogComment"),
+path('', views.blogHome, name="blogHome"),
+path('<str:slug>/', views.blogPost, name="blogPost"),
+# here if blogComment is below <str:slug> then blogComment will not be checked, it will always go with <str:slug>
+
+
+# to use static file that is related to entire project
+# create folder static to base directory and add images folder and image inside it
+# add this to settings
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    '/var/www/static/',
+]
+# add this to htmls
+<img src="/static/images/user_image.png" alt="User Image">
+
+
+# if you want to use static files related to app then
+# Store your static files in a folder called static in your app. For example my_app/static/my_app/example.jpg.
+# add this to settings
+STATIC_URL = 'static/'
+# add this to html
+{% load static %}
+<img src="{% static 'my_app/example.jpg' %}" alt="My image">
+
+# Add custom django template filter
+# create folder 'templatetags' inside app directory and inside that create 
+# two files - '__init__.py'(to make this folder as package) and 'extras.py'
+# inside extras.py add this 
+'''
+from django import template
+
+register = template.Library()
+
+@register.filter(name='get_comment_list')
+def get_comment_list(dict, key):
+    return dict.get(key)
+'''
+# to use this filter in template
+# go to views.py of that app 
+from blog.templatetags import extras
+# go to that template where you want to use
+{% load extras %}
+{% for comment_reply in comment_reply_dict|get_comment_list:comment.sno %}
+
+# by default content fetch from database and passes to html page and then rendered, django will make it safe html for protection
+# to render html as it is, user filter safe
+<p>{{post.content|safe}}</p>
+
+
+
+# integrate tinymce in admin panel BlogPost 
+# create file 'tinuInject.js' inside static directory
+'''
+var script = document.createElement('script');
+script.type = 'text/javascript';
+script.src = 'https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js';
+document.head.appendChild(script);
+
+tinymce.init({
+    selector: 'textarea#id_content',
+    height: 500,
+    menubar: false,
+    plugins: [
+      'advlist autolink lists link image charmap print preview anchor',
+      'searchreplace visualblocks code fullscreen',
+      'insertdatetime media table paste code help wordcount'
+    ],
+    toolbar: 'undo redo | formatselect | ' +
+    'bold italic backcolor | alignleft aligncenter ' +
+    'alignright alignjustify | bullist numlist outdent indent | ' +
+    'removeformat | help',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+  });
+'''
+# now go to admin.py of the app whoes admin panel you want to inject js
+'''
+@admin.register(BlogPost)
+class BlogPostAdmin(admin.ModelAdmin):
+    class Media:
+        js = ("tinyInject.js",)
+'''

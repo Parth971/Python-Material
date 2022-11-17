@@ -1,0 +1,119 @@
+# set name and email 
+git config --global user.name "Parth"
+git config --global user.email desaiparth971@gmail.com
+
+# set Defualt editor
+git config --global core.editor "code --wait"
+
+# open config file with editor
+git config --global -e
+
+# how to handle end of line settings
+# window end of line = \r\n ->[carriege return and line feed]
+# linux end of line = \n
+# for Windows
+git config --global core.autocrlf true
+# for Linus
+git config --global core.autocrlf input
+
+#help 
+git config --help
+git config -h
+
+# files in staging area
+git ls-files
+
+# renaming files in both working and staging area
+git mv oldfile newfile 
+
+# removing files in both working and staging area
+git rm filename
+
+# renaming files in only from staging area. You can use git rm -h. Also index === staging area
+git rm --cached -r dirName/
+
+# to set default diff editor to code
+git config --global diff.tool vscode
+git config --global difftool.vscode.cmd "code --wait --diff $LOCAL $REMOTE"
+
+# merging 
+# i want to merge bugFix branch into main then, go to main 
+git merge bugFix
+# for reverse, go to bugFix
+git merge main
+
+
+# rebase
+# instead of merging, we do rebase for good looking logs, rebase will do linera commits whereas simple merge will 
+# show parallel tree.
+git rebase fixBug
+git rebase main
+Note : if i am in sibling then will go attach to other's commit list in end | Or else if im in ancestors, then
+will move down to its commit | Or else if im children then interactive rebase is option
+
+
+# detaching HEAD
+# HEAD => pointing towards currenting talking commit, it can be any commit of any branch.
+# to detach 
+git checkout commitHASH
+
+# general sturucture = HEAD -> main -> C1
+# detaching means = HEAD -> C1
+
+# Relative Refrences
+git checkout main^^ -> go to parent of parent commit. Note: instead of main, we can use HEAD.
+git checkout HEAD~3 -> go up 3 excluding current HEAD
+
+# One of the most common ways I use relative refs is to move branches around. 
+# You can directly reassign a branch to a commit with the -f option. So something like:
+git branch -f main HEAD~3 -> instead of HEAD~3, we can use commitHASH
+
+# Reversing Changes
+# Git Reset - local branches
+git reset HEAD~1
+# Git Revert - Remote branches 
+
+
+# Git Cherry-pick - Here's a repository where we have some work in branch side that we want to copy to main. 
+This could be accomplished through a rebase (which we have already learned), but let's see how cherry-pick performs.
+# we are in main branch, and want to copy c3 c4 and c7 commits from different branches and append to main 
+git cherry-pick c3 c4 c7
+NOTE: commits can be anyone other than of ansestors
+
+
+
+# Git Interactive Rebase - it's the best way to review a series of commits you're about to rebase.
+# for case, im children and want to rebase parents
+git rebase -i branchname
+
+# Changing the Last Commit: It lets you combine staged changes with the previous commit instead of creating
+# an entirely new commit.
+git commit --amend
+
+# Juggling Commits - sometimes you need to make a small modification to an earlier commit.
+# currently on some branch
+git rebase -i main -> swictch that commit which is to be edited to last
+git commit --amend
+git rebase -i main -> switch back
+git branch -f main HEAD
+
+OR we can use cherry-pick like
+git checkout main
+git cherry-pick c2
+git commit --amend
+git cherry-pick c3
+
+
+# Tags: Git tags support this exact use case -- they (somewhat) permanently mark certain commits as "milestones" 
+# that you can then reference like a branch.
+# More importantly though, they never move as more commits are created. 
+# You can't "check out" a tag and then complete work on that tag -- tags exist as anchors in the commit
+# tree that designate certain spots.
+git tag tagname <optional commitHASH | HEAD>
+Note: if you checkout tagname HEAD detaches
+
+
+# Git Describe
+git describe
+git describe <baranchname>
+

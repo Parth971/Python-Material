@@ -1,0 +1,10 @@
+# To delete branch locally 
+git branch -d <branch>
+# eg: git branch -d working
+
+# Deleting a branch REMOTELY
+git push <remote> --delete <branch>
+# For example: git push origin --delete fix/authentication
+
+# You can also use this shorter command to delete a branch remotely: git push <remote> :<branch>
+For example: git push origin :fix/authentication

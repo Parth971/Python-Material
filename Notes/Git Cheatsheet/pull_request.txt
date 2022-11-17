@@ -1,0 +1,39 @@
+# https://gist.github.com/MarcDiethelm/7303312
+# How to make a clean pull request
+
+
+------------------------ For people who want to contribute or pull request ------------------------
+
+# Create a personal fork of the project on Github. Forks: Most commonly, forks are used to either propose changes to someone else's project or to use someone else's project as a starting point
+# for your own idea. You can fork a repository to create a copy of the repository and make changes without affecting the upstream repository.
+# how to fork: https://docs.github.com/en/get-started/quickstart/fork-a-repo
+
+# Clone the fork on your local machine. Your remote repo on Github is called origin.
+git clone https://github.com/octocat/Spoon-Knife.git
+git remote add origin https://github.com/personal_fork/Spoon-Knife.git
+
+# Add the original repository as a remote called upstream.
+git remote add upstreans https://github.com/original_owner/Spoon-Knife.git
+
+# check both remotes
+git remote -v
+
+# If you created your fork a while ago be sure to pull upstream changes into your local repository.
+git pull upstreams master -> all data of upstreams/master will come to master branch
+
+# Optional : Create a new branch to work on! Branch from develop if it exists, else from master.
+# Implement/fix your feature, comment your code.
+# Add or change the documentation as needed.
+# optional : Squash your commits into a single commit with git's interactive rebase. Create a new branch if necessary.
+
+# Push your branch to your fork on Github, the remote origin.
+git push -u orgin master -> push all data from master to origin remote
+
+# From your fork open a pull request in the correct branch. Target the project's develop branch if there is one, else go for master!
+# Once the pull request is approved and merged you can pull the changes from upstream to your local repo and delete your extra branch(es).
+
+
+------------------------ For people who want contribution from others or pull request accept ------------------------
+
+# https://www.digitalocean.com/community/tutorials/how-to-create-a-pull-request-on-github
+# just merge it, always trust pull requesters (.):)(.)

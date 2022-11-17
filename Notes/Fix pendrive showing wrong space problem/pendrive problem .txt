@@ -1,0 +1,8 @@
+# type diskpart in windows srch -> opens cmd
+
+list disk 
+select disk 2 -> select pendrive disk
+clean
+create partition primary
+
+# then format pendrive

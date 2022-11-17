@@ -1,0 +1,260 @@
+# pass: p2Mdesai
+
+# tips
+ls -> list dir
+pwd -> name dir
+cd / -> to go to start of computer (root, usr, var, ... etc)
+cd ../ -> go back one step
+# if u are normal sudo user and want to go to root user then
+sudo su
+
+# create new usr and give permission to become root sometimes
+# run this command while in root user account
+adduser parth
+usermod -aG sudo parth
+
+# Firewall -> sainik - kuch apps ko allow karenge ki user access kar paye
+# ufw -> sainik or diwal which checks if access is good then allow else ...
+ufw app list -> list all aps available
+ufw status -> check if firewall enable or not
+ufw allow OpenSSH -> OpenSSH is app through which we are logged in, we can allow other apps by typing name insted of OpenSSH
+ufw enable
+
+# Installing LAMP (Linux, Apache, MySQL & PHP) Stack
+sudo apt update
+sudo apt install apache2 -> webserver
+# now we want that apache serve our website but firewall(sainik) ko patahi nai hai ye apache kon hai to
+# hame sainik ko batana padega ki koi bhi internet se incoming connection ata hai to apache ko allow kardo
+sudo ufw app list
+sudo ufw app info "Apache Full"
+sudo ufw allow in "Apache Full"
+
+sudo apt install mysql-server
+sudo mysql -> open mysql
+SELECT user, authentication_string, plugin, host FROM mysql.user;
+# here root is connecting with auth_socket but we want user to connect with password
+# never chenge root pass in mysql, alternatively we can add current user or make new user but for practice we 
+# change root pass
+ALTER user 'root'@'localhost' identified with mysql_native_password by 'parthdesai';
+FLUSG PRIVILEGES;
+SELECT user, authentication_string, plugin, host FROM mysql.user;
+exit
+
+# now whenever we want to login for mysql, we cannot write sudo mysql insted we have to write
+sudo mysql -p -> then type pass "parthdesai"
+
+sudo apt install php libapache2-mod-php php-mysql -> connecting mods for php - mysql and apache
+
+# tweaking to host php websites
+sudo nano /etc/apache2/mods-enabled/dir.conf -> location of apache installed
+# now we are insided nano editor, here we can see many files but focus on index.html and index.php
+# if index.html is ahead of index.php then index.html will run but we want to run index.php so
+# replace file extensions from html to php and php to html
+# to exit nano editor press CTRL + X -> Y -> ENTER
+# now to restart apache2
+sudo service apache2 restart
+
+# now see where our website files are
+cd /var/www -> it contains html website which is default apache page
+# now go inside html folder and see index.html is present, now create one file index.php by
+sudo nano index.php -> add phpinfo(); to file 
+sudo service apache2 restart
+
+#Install PHP MyAdmin
+sudo apt install phpmyadmin php-mbstring php-gettext -> phpmyadmin and some extensions
+# pass for phpmyadmin : parthdesai
+# if error comes like "unable to locate package php-gettext"
+# then do 
+sudo apt install phpmyadmin php-mbstring
+sudo apt-get install gettext
+# The package 'php-gettext' is not required if you already have 'gettext' installed.
+
+# Enable php mods
+sudo phpenmod mbstring
+# restart server
+# now go to ip/phpmyadmin
+# login with user, but never use root to avoid problems
+# so we will create new mysql user
+create user 'parth'@'localhost' identified by 'parth2000';
+# new account 'parth' -> phpmyadmin pass = parth2000
+grant all privileges on *.* to 'parth'@'localhost' with grant option
+
+
+# multiple php website on single server
+# go to /var/www/ and create project or website name For eg myportfolio
+sudo mkdir myportfolio
+ls -lart
+# see myportfolio is created by root but we want to change it to current user
+sudo chown -R $USER:$USER myportfolio
+cd myportfolio/
+sudo nano index.php
+
+cd /etc/apache2/sites-available/ -> all available websites ki configuratoin files are here
+# copy contents of default conf file to new file naming with myportfolio.conf
+sudo cp 000-default.conf myportfolio.conf
+sudo nano myportfolio.conf
+# ServerAdmin desaiparth971@gmail.com
+# ServerName websitename.com
+# ServerAlias www.websitename.com
+# DocumentRoot /var/www/myportfolio
+
+sudo a2ensite myportfolio.conf
+sudo s2dissite 000-default.conf
+# restart
+
+# hosting flask website
+sudo apt install libapache2-mod-wsgi-py3
+# always use wsgi for production instead of using development server
+# got to var/www and create flask app
+cd /var/www
+sudo mkdir flaskapp
+cd flaskapp
+sudo mkdir flaskapp
+# created flaskapp folder inside flaskapp folder which is in www dir
+
+sudo apt install python3-pip
+# for creating Virtual env for deploying flask app
+sudo virtualenv venv
+OR
+sudo apt install python3-venv
+sudo python3 -m venv virtual-env-name
+source venv/bin/activate
+
+# if this error comes: ERROR: Could not install packages due to an EnvironmentError: [Errno 13]
+# means you have to convert flaskapp folder from root to user as we shown above
+sudo chown -R $USER:$USER flaskapp/
+# also after making virtualenv folder, we need to change from root to user
+sudo chown -R $USER:$USER venv
+
+# activate venv
+pip install flask requests pandas flask-sqlalchemy
+
+# now to add conf file in apache2, go to /etc/apache2/sites-available and copy default app to new file naming flaskapp.conf
+sudo cp 000_default.conf flaskapp.conf
+sudo nano flaskapp.conf
+`ServerName www.websitename.com
+ServerAdmin desaiparth971@gmail.com
+WSGIScriptAlias / /var/www/flaskapp/flaskapp.wsgi
+<Directory /var/www/flaskapp/flaskapp/>
+	Order allow,deny
+	Allow from all
+</Directory>
+Alias /static /var/www/flaskapp/flaskapp/static
+<Directory /var/www/flaskapp/flaskapp/static/>
+	Order allow,deny
+	Allow from all
+</Directory>
+DocumentRoot /var/www/flaskapp
+LogLevel warn `
+
+sudo a2ensite flaskapp.conf
+sudo a2dissite myportfolio.conf
+
+# now go to /var/www/flaskapp and create file flaskapp.wsgi
+sudo nano flaskapp.wsgi
+`#!/usr/bin/python
+activate_this = '/var/www/flaskapp/flaskapp/venv/bin/activate_this.py'
+exec(open(activate_this).read(), dict(__file__=activate_this))
+import sys
+import logging
+logging.basicConfig(stream=sys.stderr)
+sys.path.insert(0, "/var/www/flaskapp/")
+from flaskapp import app as application
+application.secret_key = 'Add-my-secret-1234-key!@$$%^&*(sdfsdf643535##$$' `
+
+# then goto /var/www/flaskapp/flaskapp
+vim __init__.py
+`from flask import Flask
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return 'Hello, World!' `
+
+# for seeing error logs
+cd /var/log/apache2/
+cat error.log
+
+# Filezilla -> use sftp 22 port and not ftp 21 port
+# Putty 
+
+# SSH Keys -> we can login directly using our pc terminal(bash, putty, .bat etc)
+# open git bash
+ssh root@137.184.25.70
+# now enter pass and you can do cmds and exit, but you have to enter pass each time so genrate ssh key
+ssh-keygen -t rsa
+cat ~/.ssh/id_rsa.pub -> name of file in which key generated
+# now to add this in VPS their is two ways (1.) go to VPS machine and add to specific file (2.)
+ssh-copy-id root@137.184.25.70
+
+#now open again 
+ssh root@137.184.25.70
+# notice you dont need to enter pass
+
+#now comes ninja technique
+# create new file anywhere like desktop and add text and extension should be .bat
+start "" ssh root@137.184.25.70
+# now when you open this file, it shoud open directly your VPS system
+# now comes security error, so go to User/.ssh folder and open id_rsa property -> security -> advanced 
+-> disable inheritance in bottom -> remove all user -> click Add -> select a principle 
+-> enter name -> ok, ok, apply, ok
+
+
+# hosting Django website
+# Note: for running development server on port 8000, we must first open that port by
+sudo iptables -A INPUT -p tcp --dport 8000 -j ACCEPT
+# during ip port config i reasearched about many cmds
+# to list iptable
+sudo iptables -L
+# to get specific port rule
+sudo iptables -nL | grep 8000
+# to see listening ports
+netstat -tulpan 
+
+
+# created MAC folder in /var/www/
+# created virtual env inside MAC as env
+# make MAC and env dire own as user to access properly
+# install django
+# go to /etc/appache/sites-configuration and create file mac.conf and add text abouve error as shown below
+`Alias /static /var/www/djangomac/static
+    <Directory /var/www/djangomac/static>
+        Require all granted
+    </Directory>
+	
+	<Directory /var/www/djangomac/djangomacproj>
+        <Files wsgi.py>
+            Require all granted
+        </Files>
+    </Directory>
+
+    WSGIDaemonProcess djangomac python-path=/var/www/djangomac python-home=/var/www/djangomac/djangomac
+    WSGIProcessGroup djangomac
+    WSGIScriptAlias / /var/www/djangomac/djangomacproj/wsgi.py`
+
+# activate that conf file
+sudo a2ensite mac.conf
+#deactivate all other 
+
+# now add project file from git to MAC
+# dir should be like var/www/MAC/  ls
+shop paytm ... env ... mac manage.py ...
+# go in settings.py and add 
+STATIC_ROOT = os.path.join(BASE_URL, "static/")
+ALLOWED_HOST = ["137.184.25.70"]
+# if templates error occur then, 
+TEMPLATE = {
+	...
+	DIRS : ["/var/www/MAC/mac/templates"]
+	...
+}
+
+# to avoid permission issues, go to var/www
+sudo chmod 664 MAC/db.sqlite3
+sudo chown :www-data MAC/db.sqlite3
+sudo chown :www-data MAC/
+
+# for more practice -> https://chmod-calculator.com/
+
+
+

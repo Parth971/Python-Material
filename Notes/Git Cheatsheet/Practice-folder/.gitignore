@@ -1,0 +1,4 @@
+logfile.log
+*.log
+/logfile.log
+ignoreFolder/

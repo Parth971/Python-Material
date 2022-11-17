@@ -1,0 +1,182 @@
+# normal commands
+ls -> to see all files in that path folder
+pwd -> to see path
+ls -lart ->to see all files (including hidden)
+touch about.html -> create file named about.html
+cat filename.txt -> show content of file
+
+=======================================================================
+# koi bhi commit kisne kiya hai isliye name and email set karna chahiye
+
+# setting name and email:
+git config --global user.name Parth
+
+git config --global user.email Parth@parthdesai.com
+
+# viewing name and email:
+git config --global user.name
+
+git config --global user.email
+
+# opening vscode in that folder
+.code
+
+# for having repo:
+# 1: init (create local)
+# 2: clone (copy someone elses to local)
+
+# creating git repo -> will create .git folder
+git init
+
+# check status of files
+git status
+
+# 4 stages of file: 
+# untracked -> new files
+# Staged -> medannn me files hai jo commit hone k liye taiyyar hai (photo kichane ke liye pose me ready hai)
+# Unmodified -> staged me jitni files thi unka photo khich gaya hai
+# Modified -> vo files jo Unmodified hai OR vo files jo Staged me hai unme changes kiya to vo files Modified me aa jayega
+
+# note: agar Unmodified vali files ko change kiya to vo modified me jayega and then us file ko add kiya to staged me jayega 
+# then agar vapas usi file me change kiya to staged me to hogi hi vo last second changes vali file and latest change vali file 
+# modified me hogi, agge iska mast example bhi hai
+
+# untracked to staging area ke liye
+# add single file
+git add index.html
+
+# add all file
+git add -A
+
+# commit using Vim editor
+git commit 
+-> <press enter> 
+-> <press i> 
+-> <type meassage> like "Initial Commit" 
+-> <press Esc> 
+-> <type :wq> 
+-> <press Enter> 
+
+# git commit shortcut method
+git commit -m "Commit message"
+
+
+# note: contact.html, about.html, monument.html file blank create ki,
+# after that, unko staged area me bhej diya by adding command
+# after contact.html me changes kiya to contact.html modified me bhi hai and staged me bhi hai
+# staged area me contact.html blank hogi because pehle jad add kiya tab blank hi thi na
+# now if i commit without adding contact.html file to staged -> to commit me blank vali contact.html jayegi
+# but agar me pehle add karu contact.html to staged area then comit -> to latest changes vali file commit me jayegi :)
+
+
+# working files(directory) ko last commit se match karadeta hai
+# for one file
+git checkout contact.html
+
+# for all files
+git checkout -f
+
+# logs
+git log ->for all commits in short details
+git log -p -2 -> for last 2 commits in detail, details means diff ka jesa output ( files me kya different hai )
+# go to end and press q to quit
+
+# diff -> working tree (modified stage) ko staging area se compare kare ga
+git diff
+
+# diff -> last commit ko staging area se compare kare ga
+git diff --staged
+
+
+# directly commit karna means modified ko direct unmodified skipping stagging OR we can also commit thoes files whilch is in staged area 
+# [Inshort (unmodified + staged files) all gets commited]
+git commit -a -m "message"
+# note: untracked files cannot be commited by anyways
+
+
+# remove file from working directory as well as from staged area
+git rm waste.html -> according to Harry but idk for me it was saying '''error: the following file has changes staged in the index:''' so i use
+git rm waste.html -f -> its working :)
+
+
+# remove file from ONLY stagging area
+git rm -cached waste.html 
+
+# short status
+git status -s
+# MM-> file is modified but not staged (file is in working dir OR Modified stage)
+# | 
+# v
+# file is modified and is staged (file is modified and is in staged stage)
+
+
+# create .gitignore -> to ignore folders and files that we dont need or can be auto generated
+touch .gitignore
+
+# inside file, how should we write file and folder name (syntax)
+# filename.log -> it ignores all files with this name (in same dir or in some folder, ignores all file with that name)
+# *.log -> all files with extension .log will be ignored (in same dir or in some folder, ignores all file with that extension)
+# /filename.log -> ignores file in current directory ONLY, if file present in some folder it will not ignore
+# foldername/ -> ignores the folder
+
+
+# Branch
+# main branch always called master branch
+
+# we can create branch and make copy of master branch 
+git branch feature1
+
+# see all branch 
+git branch
+
+# change branch
+git checkout feature1
+
+# merge branch -> switch to master branch then
+git merge feature1
+
+# create and switch to branch (shortcut)
+git checkout -b branchname
+
+
+# add remote to local
+git remote add origin https://github.com/Username/reponame.git
+
+# shows names of remotes
+git remote 
+
+# shows fetch and push URls
+git remote -v
+
+# push local to remote
+git push orgin master
+	   |     |
+	   v     v
+	remote local
+
+# Adding remote and Generating SSH key
+git remote add origin git@github.com:Parth971/Git-Material-with-cheatsheet.git
+git push -u origin main -> will give access denial erroe
+
+# Creating SSH key:
+-> go to github settings 
+-> Click SSH and GPG keys 
+-> Click Generating a new SSH key
+-> paste in gitbash => ssh-keygen -t ed25519 -C "your_email@example.com"
+-> paste in gitbash => eval "$(ssh-agent -s)"
+-> paste in gitbash => ssh-add ~/.ssh/id_ed25519
+-> paste in gitbash => cat ~/.ssh/id_ed25519.pub 
+-> copy output text
+-> open SSH and GPG keys section of Github
+-> Click New SSH key
+-> paste content in key, and title as you want
+-> Add SSH key
+
+# if u copyied wrong url, u can set using
+# set Url
+git remote set-url git@github.com:Parth971/Git-Material-with-cheatsheet.git
+
+# back to gitbash
+git push -u origin main
+
+ho gaya :):):) (.)(.)
