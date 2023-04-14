@@ -1,0 +1,4 @@
+1. I created one item for user 1 and then try to create for user 2 which is not in existence, and then try to create item for user 1.
+Then checking in DB, I see two items of user 1, but its ids is 1, 3 and not 1, 2. WHY?
+
+2. async def vs def, https://fastapi.tiangolo.com/tutorial/sql-databases/#about-def-vs-async-def

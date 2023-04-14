@@ -1,0 +1,12 @@
+Generic single-database configuration.
+
+Installing alembic:
+1. pip install alembic
+2. alembic init alembic_folder_name
+
+Using alembic:
+1. Change url in alembic.ini
+2. Add model to model.py file
+3. tell auto change detection by adding "target_metadata = [Base.metadata]" in env.py file
+4. cmd: alembic revision --autogenerate -m "First commit" # this generates file for migrations
+5. cmd: alembic upgrade head # this generates table in db
